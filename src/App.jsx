@@ -49,6 +49,55 @@ function Workspace({ user, profile, onLogout }) {
   const [search, setSearch] = useState("");
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [pendingRoles, setPendingRoles] = useState({});
+  const [adminLoading, setAdminLoading] = useState(false);
+
+  async function loadAdminUsers() {
+    if (!supabase || profile.role !== "super_admin") return;
+
+    setAdminLoading(true);
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, full_name, role, created_at")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      setNotice("Could not load users: " + error.message);
+    } else {
+      setAdminUsers(data || []);
+      setPendingRoles({});
+    }
+    setAdminLoading(false);
+  }
+
+  async function saveUserRole(targetUser) {
+    const nextRole = pendingRoles[targetUser.id];
+    if (!nextRole || !["admin", "user"].includes(nextRole)) return;
+    if (targetUser.role === "super_admin" || targetUser.id === user.id) {
+      setNotice("The Super Admin account is protected.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Change ${targetUser.full_name || "this user"} to ${nextRole}?`
+    );
+    if (!confirmed) return;
+
+    setAdminLoading(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ role: nextRole })
+      .eq("id", targetUser.id);
+
+    if (error) {
+      setNotice("Role update failed: " + error.message);
+    } else {
+      setNotice("User role updated.");
+      await loadAdminUsers();
+    }
+    setAdminLoading(false);
+  }
 
   async function loadAll() {
     if (!supabase) return;
@@ -85,6 +134,12 @@ function Workspace({ user, profile, onLogout }) {
   useEffect(() => {
     loadAll();
   }, []);
+
+  useEffect(() => {
+    if (tab === "admin" && profile.role === "super_admin") {
+      loadAdminUsers();
+    }
+  }, [tab, profile.role]);
 
   const customerStats = useMemo(
     () =>
@@ -302,16 +357,17 @@ function Workspace({ user, profile, onLogout }) {
     ["products", "Products"],
     ["billing", "Add Bill"],
     ["payments", "Add Payment"],
-    ["records", "Records"]
+    ["records", "Records"],
+    ...(profile.role === "super_admin" ? [["admin", "User Management"]] : [])
   ];
 
   return (
     <div className="shell">
       <aside className="sidebar">
         <div className="brand">
-          <div className="brandmark">L</div>
+          <div className="brandmark">S</div>
           <div>
-            <b>Ledger</b>
+            <b>SpiceLedger CRM</b>
             <small>Business records</small>
           </div>
         </div>
@@ -330,20 +386,20 @@ function Workspace({ user, profile, onLogout }) {
 
         <div className="sidefoot">
           <span className="dot"></span>
-          {profile.role === "admin" ? "Admin workspace" : "Personal workspace"}
+          {profile.role === "super_admin" ? "Super Admin workspace" : profile.role === "admin" ? "Admin workspace" : "Personal workspace"}
         </div>
       </aside>
 
       <main className="main">
         <header className="topbar">
           <div>
-            <span className="eyebrow">LEDGER WORKSPACE</span>
+            <span className="eyebrow">SPICELEDGER WORKSPACE</span>
             <h1>{nav.find(n => n[0] === tab)?.[1]}</h1>
           </div>
 
           <div className="topright">
             <span className="pill">
-              {profile.role === "admin" ? "Admin" : "Private workspace"}
+              {profile.role === "super_admin" ? "Super Admin" : profile.role === "admin" ? "Admin" : "Private workspace"}
             </span>
 
             <span>{profile.full_name || user.email}</span>
@@ -369,7 +425,7 @@ function Workspace({ user, profile, onLogout }) {
                 <span className="eyebrow light">BUSINESS OVERVIEW</span>
                 <h2>Your records, in one place.</h2>
                 <p>
-                  Track customer billing and payments with your Ledger
+                  Track customer billing and payments with your SpiceLedger CRM
                   workspace.
                 </p>
               </div>
@@ -856,7 +912,97 @@ function Workspace({ user, profile, onLogout }) {
           </section>
         )}
 
-        <footer>Ledger · Private business records</footer>
+        {tab === "admin" && profile.role === "super_admin" && (
+          <section className="panel">
+            <div className="panelhead">
+              <div>
+                <h3>User management</h3>
+                <p>View registered profiles and assign Admin or Normal User access.</p>
+              </div>
+              <button className="textbtn" type="button" onClick={loadAdminUsers}>
+                Refresh users
+              </button>
+            </div>
+
+            {adminLoading && <p>Loading users...</p>}
+
+            <div className="tablewrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                    <th>Change role</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {adminUsers.map(target => (
+                    <tr key={target.id}>
+                      <td>
+                        <b>{target.full_name || "Unnamed user"}</b>
+                        <small>{target.id}</small>
+                      </td>
+                      <td>
+                        <span className={`role-chip role-${target.role}`}>
+                          {target.role.replace("_", " ")}
+                        </span>
+                      </td>
+                      <td>{new Date(target.created_at).toLocaleDateString("en-IN")}</td>
+                      <td>
+                        {target.role === "super_admin" || target.id === user.id ? (
+                          <span className="muted">Protected account</span>
+                        ) : (
+                          <select
+                            value={pendingRoles[target.id] || target.role}
+                            onChange={e =>
+                              setPendingRoles(old => ({
+                                ...old,
+                                [target.id]: e.target.value
+                              }))
+                            }
+                          >
+                            <option value="user">Normal User</option>
+                            <option value="admin">Admin</option>
+                          </select>
+                        )}
+                      </td>
+                      <td>
+                        {target.role !== "super_admin" && target.id !== user.id && (
+                          <button
+                            className="primary small-primary"
+                            type="button"
+                            disabled={
+                              adminLoading ||
+                              !pendingRoles[target.id] ||
+                              pendingRoles[target.id] === target.role
+                            }
+                            onClick={() => saveUserRole(target)}
+                          >
+                            Save
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {!adminUsers.length && !adminLoading && (
+                    <tr>
+                      <td colSpan="5" className="empty">No user profiles found.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <p className="admin-note">
+              Super Admin accounts cannot be changed from this screen. Account
+              activation, deactivation and deletion are intentionally not included;
+              those require a protected server-side Auth function.
+            </p>
+          </section>
+        )}
+
+        <footer>SpiceLedger CRM · Private business records</footer>
       </main>
     </div>
   );
@@ -1006,7 +1152,7 @@ export default function App() {
   }
 
   if (loading) {
-    return <p>Loading Ledger...</p>;
+    return <p>Loading SpiceLedger CRM...</p>;
   }
 
   if (!session) {
