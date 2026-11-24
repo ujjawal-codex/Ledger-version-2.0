@@ -44,3 +44,31 @@
   border-radius: 8px;
   line-height: 1.5;
 }
+
+
+/* Customer invoice / purchase statement */
+.ledger-filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin:16px 0 20px}
+.invoice-sheet{max-width:1100px;margin:0 auto;background:#fff;border:1px solid #e5e9e2;border-radius:12px;padding:28px}
+.invoice-brand{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #263b2b;padding-bottom:18px}
+.invoice-brand strong{display:block;font:800 23px Manrope;letter-spacing:.5px;color:#23372a}
+.invoice-brand small,.invoice-customer small{display:block;color:#899188;font-size:9px;letter-spacing:1.2px;font-weight:700;margin-top:4px}
+.invoice-brand span{font-size:11px;font-weight:800;letter-spacing:1.3px;color:#486b3e;border:1px solid #dce8d6;padding:9px 12px;border-radius:6px}
+.invoice-customer{display:flex;justify-content:space-between;gap:20px;padding:22px 0;border-bottom:1px solid #e9ede7}
+.invoice-customer h2{font:800 20px Manrope;margin:7px 0 5px}.invoice-customer p{font-size:11px;color:#687368;margin:3px 0}
+.invoice-meta{min-width:210px;display:grid;gap:5px;align-content:start}.invoice-meta strong{font-size:12px;margin-bottom:7px}
+.invoice-section-title{font-size:11px;letter-spacing:1px;color:#53634f;margin:23px 0 9px}
+.invoice-table{font-size:11px}.invoice-table th{background:#f1f5ef;color:#586557}.invoice-table td,.invoice-table th{padding:11px 9px}.invoice-table .numeric{text-align:right;white-space:nowrap}
+.invoice-totals{width:min(390px,100%);margin:20px 0 0 auto;border-top:1px solid #e5eae2;padding-top:10px}.invoice-totals div{display:flex;justify-content:space-between;gap:15px;padding:7px 0;font-size:12px}.invoice-totals span{color:#718071}.invoice-totals strong{font-weight:800}.invoice-totals .invoice-balance{border-top:1px solid #dfe6dc;margin-top:5px;padding-top:12px;font-size:14px}.invoice-balance strong{font:800 19px Manrope;color:#a34435}.invoice-footer{border-top:1px solid #edf0eb;margin-top:24px;padding-top:12px;text-align:center;color:#9aa39a;font-size:10px}
+@media(max-width:700px){.ledger-filters{grid-template-columns:1fr}.invoice-sheet{padding:15px}.invoice-customer{display:block}.invoice-meta{margin-top:18px}.invoice-brand strong{font-size:19px}}
+@media print{body{background:#fff}.sidebar,.topbar,.notice,.ledger-filters,.panelhead .textbtn,footer{display:none!important}.main{padding:0;width:100%}.panel.invoice-panel{border:0;padding:0;margin:0}.invoice-sheet{border:0;padding:8mm;max-width:none}.invoice-table{font-size:9px}.invoice-table td,.invoice-table th{padding:7px 5px}}
+
+/* Inline customer and product creation in Add Bill */
+.inline-add-trigger{align-self:flex-start;margin:-7px 0 5px;padding:0;font-size:12px}
+.inline-product-trigger{padding:3px 0 0;font-size:10px;text-align:left}
+.inline-create-box{border:1px solid #dfe8d9;background:#f8fbf6;border-radius:10px;padding:14px;margin:2px 0 10px}
+.inline-create-box>b{display:block;font:700 13px Manrope;margin-bottom:10px;color:#314b35}
+.inline-create-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.inline-create-fields button{align-self:end}
+@media(max-width:620px){.inline-create-fields{grid-template-columns:1fr}}
+
+@media print{.invoice-panel .panelhead{display:none!important}.invoice-sheet{box-shadow:none!important}.invoice-table{page-break-inside:auto}.invoice-table tr{page-break-inside:avoid;page-break-after:auto}}
