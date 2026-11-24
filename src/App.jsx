@@ -1,6 +1,6 @@
 
 import React, { useEffect, useMemo, useState } from "react";
-import Auth from "./Auth";
+import Auth from "./auth.jsx";
 import { supabase } from "./supabase";
 
 const money = n =>
