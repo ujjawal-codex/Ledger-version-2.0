@@ -1,6 +1,3 @@
-
-
-
 import React, { useState } from "react";
 import { supabase, setRememberMe } from "./supabase";
 import "./auth.css";
@@ -48,9 +45,7 @@ export default function Auth() {
         setMessage(
           "Account created! Please check your email and click the verification link before signing in."
         );
-      }
-
-      else if (mode === "login") {
+      } else if (mode === "login") {
         setRememberMe(remember);
 
         const { error } = await supabase.auth.signInWithPassword({
@@ -61,9 +56,7 @@ export default function Auth() {
         if (error) throw error;
 
         setMessage("Login successful. Loading your workspace...");
-      }
-
-      else if (mode === "forgot") {
+      } else if (mode === "forgot") {
         const { error } = await supabase.auth.resetPasswordForEmail(
           email.trim(),
           { redirectTo: window.location.origin }
@@ -86,15 +79,17 @@ export default function Auth() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-brand">
-          <div className="auth-logo">L</div>
+          <div className="auth-logo">S</div>
           <div>
-            <h2>Ledger</h2>
+            <h2>SpiceLedger CRM</h2>
             <span>Business made simpler</span>
           </div>
         </div>
 
         <div className="auth-welcome">
-          <div className="auth-tag">YOUR BUSINESS, IN CONTROL</div>
+          <div className="auth-tag">
+            SPICELEDGER BUSINESS MANAGEMENT
+          </div>
 
           <h1>
             {mode === "login" && "Welcome back."}
@@ -103,9 +98,12 @@ export default function Auth() {
           </h1>
 
           <p>
-            {mode === "login" && "Sign in to manage your business records."}
-            {mode === "signup" && "Start managing your business with Ledger."}
-            {mode === "forgot" && "Enter your email to receive a secure reset link."}
+            {mode === "login" &&
+              "Sign in to manage your business records."}
+            {mode === "signup" &&
+              "Start managing your business with SpiceLedger CRM."}
+            {mode === "forgot" &&
+              "Enter your email to receive a secure reset link."}
           </p>
         </div>
 
@@ -195,7 +193,7 @@ export default function Auth() {
         <div className="auth-switch">
           {mode === "login" && (
             <>
-              New to Ledger?{" "}
+              New to SpiceLedger CRM?{" "}
               <button type="button" onClick={() => changeMode("signup")}>
                 Create an account
               </button>
@@ -219,8 +217,8 @@ export default function Auth() {
         </div>
 
         <div className="auth-security">
-          <span>● Secure access</span>
-          <span>● Private business records</span>
+          <span>● SpiceLedger account access</span>
+          <span>● Private business workspace</span>
         </div>
       </div>
     </div>
