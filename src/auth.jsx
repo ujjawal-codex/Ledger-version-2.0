@@ -3,7 +3,7 @@
 
 import React, { useState } from "react";
 import { supabase, setRememberMe } from "./supabase";
-import "./Auth.css";
+import "./auth.css";
 
 export default function Auth() {
   const [mode, setMode] = useState("login");
