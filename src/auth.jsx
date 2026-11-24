@@ -217,8 +217,14 @@ export default function Auth() {
         </div>
 
         <div className="auth-security">
-          <span>● SpiceLedger account access</span>
-          <span>● Private business workspace</span>
+          <span>Independent business-records application</span>
+          <span>
+            Sign-in handled by{" "}
+            <a href="https://supabase.com/auth" target="_blank" rel="noopener noreferrer">
+              Supabase Auth
+            </a>
+          </span>
+          <span>Not a Google, bank, or crypto-wallet login page</span>
         </div>
       </div>
     </div>
