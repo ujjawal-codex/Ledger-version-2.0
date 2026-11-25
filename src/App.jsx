@@ -18,6 +18,7 @@ const blankCustomer = {
 
 function Workspace({ user, profile, onLogout }) {
   const [tab, setTab] = useState("overview");
+  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
   const [bills, setBills] = useState([]);
@@ -469,7 +470,8 @@ function Workspace({ user, profile, onLogout }) {
 
       <main className="main">
         <header className="topbar">
-          <div>
+          <div className="topbar-title">
+            <div className="mobile-brand"><span className="brandmark">S</span><span><b>SpiceLedger CRM</b><small>Business records</small></span></div>
             <span className="eyebrow">SPICELEDGER WORKSPACE</span>
             <h1>{nav.find(n => n[0] === tab)?.[1]}</h1>
           </div>
@@ -1142,6 +1144,29 @@ function Workspace({ user, profile, onLogout }) {
 
         <footer>SpiceLedger CRM · Private business records</footer>
       </main>
+      <nav className="mobile-bottom-nav" aria-label="Main navigation">
+        {[
+          ["overview", "⌂", "Home"],
+          ["customers", "♙", "Customers"],
+          ["billing", "+", "Add Bill"],
+          ["payments", "₹", "Payments"]
+        ].map(([id, icon, label]) => (
+          <button key={id} type="button" className={tab === id ? "mobile-nav-item active" : "mobile-nav-item"} onClick={() => { setTab(id); setMobileMoreOpen(false); }} aria-current={tab === id ? "page" : undefined}>
+            <span className="mobile-nav-icon" aria-hidden="true">{icon}</span><span>{label}</span>
+          </button>
+        ))}
+        <button type="button" className={mobileMoreOpen ? "mobile-nav-item active" : "mobile-nav-item"} onClick={() => setMobileMoreOpen(value => !value)} aria-expanded={mobileMoreOpen}>
+          <span className="mobile-nav-icon" aria-hidden="true">•••</span><span>More</span>
+        </button>
+      </nav>
+      {mobileMoreOpen && (
+        <div className="mobile-more-panel">
+          {nav.filter(([id]) => !["overview", "customers", "billing", "payments"].includes(id)).map(([id, label]) => (
+            <button key={id} type="button" className={tab === id ? "mobile-more-link active" : "mobile-more-link"} onClick={() => { setTab(id); setMobileMoreOpen(false); }}>{label}</button>
+          ))}
+          <button type="button" className="mobile-more-link logout-link" onClick={() => { setMobileMoreOpen(false); onLogout(); }}>Logout</button>
+        </div>
+      )}
     </div>
   );
 }
