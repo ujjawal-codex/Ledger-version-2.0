@@ -1,0 +1,28 @@
+{
+  "id": "/",
+  "name": "SpiceLedger CRM",
+  "short_name": "SpiceLedger",
+  "description": "Manage customers, billing, payments and business records.",
+  "lang": "en-IN",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5f7f4",
+  "theme_color": "#17251d",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/spiceledger.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/spiceledger-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
